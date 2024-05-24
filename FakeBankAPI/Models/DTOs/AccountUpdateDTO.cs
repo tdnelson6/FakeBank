@@ -6,6 +6,7 @@ namespace FakeBankAPI.Models.DTOs
     {
         [Required]
         public int AccountNumber { get; set; }
+        [Required]
         public decimal Balance { get; set; }
     }
 }

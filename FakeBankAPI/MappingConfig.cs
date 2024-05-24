@@ -12,7 +12,6 @@ namespace FakeBankAPI
             CreateMap<Account, AccountCreateDTO>().ReverseMap();
             CreateMap<Account, AccountUpdateDTO>().ReverseMap();
             CreateMap<Account, AccountDTO>().ReverseMap();
-
         }
     }
 }

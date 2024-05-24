@@ -8,7 +8,7 @@ namespace FakeBankAPI.BaseData
     {
         public DBContext(DbContextOptions<DBContext> options) : base(options) { }
 
-        public DbSet<AppUser> Users { get; set; }
+        public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Account> Accounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) //creates default accounts in the database
@@ -20,7 +20,7 @@ namespace FakeBankAPI.BaseData
                     Id = 1,
                     AccountNumber = "1234567890",
                     AccountType = "Savings",
-                    Balance = 1000,
+                    Balance = 1000.00,
                     Currency = "USD",
                     Name = "John Doe",
                     InterestRate = 0.05,
@@ -32,7 +32,7 @@ namespace FakeBankAPI.BaseData
                     Id = 2,
                     AccountNumber = "0987654321",
                     AccountType = "Checking",
-                    Balance = 500,
+                    Balance = 500.00,
                     Currency = "USD",
                     Name = "Jane Doe",
                     InterestRate = 0.01,

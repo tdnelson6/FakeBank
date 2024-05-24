@@ -4,6 +4,8 @@ using FakeBankAPI.Models;
 using FakeBankAPI.Models.DTOs;
 using FakeBankAPI.Repo.RepoFunctionBase;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,20 +17,25 @@ namespace FakeBankAPI.Repo
     {
         private readonly DBContext _data;
         private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private string secretKey;
         private readonly IMapper _mapper;
+        private readonly ILogger<UserRepo> _logger;
 
-        public UserRepo(DBContext data, IConfiguration config, UserManager<AppUser> userManager, IMapper mapper)
+        public UserRepo(DBContext data, IConfiguration config, UserManager<AppUser> userManager, IMapper mapper, RoleManager<IdentityRole> roleManager, ILogger<UserRepo> logger)
         {
             _data = data; //initializes the database context
             _userManager = userManager; //initializes the user manager
-            secretKey = config.GetSection("AppSettings:Secret").Value; //gets the secret key from the appsettings.json file
+            //gets the secret key from the appsettings.json file
+            secretKey = config.GetValue<string>("ApiSettings:Secret");
             _mapper = mapper; //initializes the mapper
+            _roleManager = roleManager; //initializes the role manager
+            _logger = logger;
         }
 
         public bool IsUniqueUser(string username) //checks if the user exists in the database
         {
-            var user = _data.Users.FirstOrDefault(x => x.UserName == username); 
+            var user = _data.AppUsers.FirstOrDefault(x => x.UserName == username); 
             if (user == null)
             {
                 return true; //returns true if the user does not exist
@@ -38,13 +45,17 @@ namespace FakeBankAPI.Repo
 
         public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO)
         {
-            var user = _data.Users.FirstOrDefault(x => x.UserName == loginRequestDTO.UserName); //gets the user from the database
+            var user = _data.AppUsers.FirstOrDefault(x => x.UserName.ToLower() == loginRequestDTO.UserName.ToLower()); //gets the user from the database
+            _logger.LogWarning("Login attempt (USER_REPO) for {username}", loginRequestDTO.UserName); //logs the login attempt
 
-            bool isvalid = await _userManager.CheckPasswordAsync(user, loginRequestDTO.Password); //checks if the password is valid
+            bool isValid = await _userManager.CheckPasswordAsync(user, loginRequestDTO.Password); //checks if the password is valid
+
 
             //if no user is found, return an empty token
-            if (user == null)
+            if (user == null || isValid == false)
             {
+                _logger.LogError("Login failed for {username}, correctPass = {isValid} ", loginRequestDTO.UserName, isValid); //logs the failed login attempt
+
                 return new LoginResponseDTO()
                 {
                     Token = "",
@@ -53,16 +64,17 @@ namespace FakeBankAPI.Repo
             }
 
             //if user is found, generate a token
+            _logger.LogWarning("Login successful for {username}, generating token with key - {key}", loginRequestDTO.UserName, secretKey); //logs the successful login attempt
             var tokenHandler = new JwtSecurityTokenHandler(); //creates a new token handler
-            var key = Encoding.ASCII.GetBytes(secretKey); //gets the secret key
             var roles = await _userManager.GetRolesAsync(user); //gets the roles of the user
+            var key = Encoding.ASCII.GetBytes(secretKey); //gets the secret key
+            _logger.LogWarning("Token generated for {username}, Roles = {roles}", loginRequestDTO.UserName, roles); //logs the roles of the user
 
             //creates the token descriptor
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), //adds the user id to the token
                     new Claim(ClaimTypes.Name, user.UserName), //adds the username to the token
                     new Claim(ClaimTypes.Role, roles.FirstOrDefault()) //adds the role to the token
                 }),
@@ -75,7 +87,6 @@ namespace FakeBankAPI.Repo
             {
                 Token = tokenHandler.WriteToken(token), //writes the token to the response DTO
                 User = _mapper.Map<UserDTO>(user), //maps the user to the response DTO
-                Role = roles.FirstOrDefault() //adds the role to the response DTO
             };
             return loginResponseDTO; //returns the response DTO
 
@@ -83,32 +94,48 @@ namespace FakeBankAPI.Repo
 
         public async Task<UserDTO> Register(RegisterationRequestDTO registerationRequestDTO)
         {
-            AppUser user = new()//creates a new user
+            AppUser user = new()
             {
-                UserName = registerationRequestDTO.UserName, //sets the username
-                Email = registerationRequestDTO.Email.ToLower(), //sets the email normalized
-                PhoneNumber = registerationRequestDTO.PhoneNumber, //sets the phone number
+                UserName = registerationRequestDTO.UserName,
+                Email = registerationRequestDTO.Email,
+                NormalizedEmail = registerationRequestDTO.Email.ToUpper(),
+                PhoneNumber = registerationRequestDTO.PhoneNumber,
+                NormalizedUserName = registerationRequestDTO.UserName.ToUpper()
             };
+            _logger.LogWarning("Registration attempt (USER_REPO) for {username}", user.UserName);
 
             try
             {
-                var result = _userManager.CreateAsync(user, registerationRequestDTO.Password).Result; //creates the user
-                if (result.Succeeded) //if the user is created successfully
+                var result = await _userManager.CreateAsync(user, registerationRequestDTO.Password);
+                if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, registerationRequestDTO.Role); //adds the role to the user
-                    var returnUser = _data.Users.FirstOrDefault(x => x.UserName == registerationRequestDTO.UserName); //gets the user from the database
-                    return _mapper.Map<UserDTO>(returnUser); //returns the user
+                    _logger.LogWarning("Registration attempt in succeed (USER_REPO_test2) - {result}", result.Succeeded);
+
+                    if (!_roleManager.RoleExistsAsync("admin").GetAwaiter().GetResult())
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole("admin"));
+                        await _roleManager.CreateAsync(new IdentityRole("user"));
+                    }
+                    await _userManager.AddToRoleAsync(user, "admin");
+                    var userToReturn = _data.AppUsers.FirstOrDefault(u => u.UserName == registerationRequestDTO.UserName);
+                    return _mapper.Map<UserDTO>(userToReturn);
+
                 }
                 else
                 {
-                    throw new Exception("User creation failed! Please check user details and try again."); //throws an exception if the user creation fails
+                    foreach (var error in result.Errors)
+                    {
+                        _logger.LogError("User creation error: {Code} - {Description}", error.Code, error.Description);
+                    }
+
                 }
             }
             catch (Exception e)
             {
-                //TODO log error
+                _logger.LogError("Registration exception (USER_REPO) for {username}", e.ToString());
             }
-            return new UserDTO(); //returns an empty user DTO
+
+            return new UserDTO();
         }
     }
 }

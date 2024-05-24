@@ -12,12 +12,21 @@ using FakeBankAPI.BaseData;
 using FakeBankAPI.Repo;
 using AutoMapper;
 using FakeBankAPI.Repo.RepoFunctionBase;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//add logger
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Warning()
+    .WriteTo.File("log/bankLogs.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 // Add services to the container.
 
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -40,7 +49,10 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(option =>
 }).AddEntityFrameworkStores<DBContext>().AddDefaultTokenProviders();
 
 
-builder.Services.AddAutoMapper(typeof(MappingConfig)); 
+builder.Services.AddAutoMapper(typeof(MappingConfig));
+
+//adds key
+var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
 builder.Services.AddAuthentication(x => //add authentication setup
 {
@@ -53,7 +65,7 @@ builder.Services.AddAuthentication(x => //add authentication setup
     x.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("ApiSettings:Secret").Value!)),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
         ValidateIssuer = false,
         ValidateAudience = false
     };
@@ -61,7 +73,7 @@ builder.Services.AddAuthentication(x => //add authentication setup
 
 builder.Services.AddVersionedApiExplorer(option =>
 {//add version control
-    option.GroupNameFormat = "'v'VVV";
+    option.GroupNameFormat = "'v'VVVV";
     option.SubstituteApiVersionInUrl = true;
     option.AssumeDefaultVersionWhenUnspecified = true;
     option.DefaultApiVersion = new ApiVersion(1, 0);
@@ -88,7 +100,7 @@ builder.Services.AddSwaggerGen(options =>
         Description =
             "JWT Authorization header using the Bearer scheme. \r\n\r\n " +
             "Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\n" +
-            "Example: \"Bearer 12345abcdef\"",
+            "EX: \"Bearer 12345abcdef\"",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Scheme = "Bearer"
@@ -146,7 +158,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1.0/swagger.json", "BankV1");
-        options.SwaggerEndpoint("/swagger/v2.0/swagger.json", "BankV2");
+        //options.SwaggerEndpoint("/swagger/v2.0/swagger.json", "BankV2");
     });
 }
 

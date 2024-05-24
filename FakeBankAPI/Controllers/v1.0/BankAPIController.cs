@@ -28,7 +28,7 @@ namespace FakeBankAPI.Controllers.v1._0
         }
 
         [HttpGet(Name = "GetAccounts")]
-        [Authorize]
+        //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetAccounts()
         {
@@ -49,7 +49,7 @@ namespace FakeBankAPI.Controllers.v1._0
         }
 
         [HttpGet("{AccountNumber:int}", Name = "GetAccount")]
-        [Authorize(Roles = "admin")]
+        //[Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -83,8 +83,8 @@ namespace FakeBankAPI.Controllers.v1._0
         }
 
         [HttpPost(Name = "CreateAccount")]
-        [Authorize(Roles = "admin")]
-        [Authorize(Roles = "client")]
+        //[Authorize(Roles = "admin")]
+        //[Authorize(Roles = "client")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

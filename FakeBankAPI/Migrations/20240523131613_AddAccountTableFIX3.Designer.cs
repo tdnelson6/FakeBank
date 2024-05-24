@@ -4,6 +4,7 @@ using FakeBankAPI.BaseData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FakeBankAPI.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20240523131613_AddAccountTableFIX3")]
+    partial class AddAccountTableFIX3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,11 +72,11 @@ namespace FakeBankAPI.Migrations
                             AccountNumber = "1234567890",
                             AccountType = "Savings",
                             Balance = 1000.0,
-                            CreatedAt = new DateTime(2024, 5, 24, 10, 35, 43, 543, DateTimeKind.Local).AddTicks(2520),
+                            CreatedAt = new DateTime(2024, 5, 23, 15, 16, 12, 575, DateTimeKind.Local).AddTicks(1920),
                             Currency = "USD",
                             InterestRate = 0.050000000000000003,
                             Name = "John Doe",
-                            UpdatedAt = new DateTime(2024, 5, 24, 10, 35, 43, 543, DateTimeKind.Local).AddTicks(2595)
+                            UpdatedAt = new DateTime(2024, 5, 23, 15, 16, 12, 575, DateTimeKind.Local).AddTicks(1975)
                         },
                         new
                         {
@@ -81,11 +84,11 @@ namespace FakeBankAPI.Migrations
                             AccountNumber = "0987654321",
                             AccountType = "Checking",
                             Balance = 500.0,
-                            CreatedAt = new DateTime(2024, 5, 24, 10, 35, 43, 543, DateTimeKind.Local).AddTicks(2609),
+                            CreatedAt = new DateTime(2024, 5, 23, 15, 16, 12, 575, DateTimeKind.Local).AddTicks(1979),
                             Currency = "USD",
                             InterestRate = 0.01,
                             Name = "Jane Doe",
-                            UpdatedAt = new DateTime(2024, 5, 24, 10, 35, 43, 543, DateTimeKind.Local).AddTicks(2611)
+                            UpdatedAt = new DateTime(2024, 5, 23, 15, 16, 12, 575, DateTimeKind.Local).AddTicks(1981)
                         });
                 });
 
@@ -107,6 +110,14 @@ namespace FakeBankAPI.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
