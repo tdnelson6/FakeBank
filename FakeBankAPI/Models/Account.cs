@@ -9,10 +9,10 @@ namespace FakeBankAPI.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int AccountNumber { get; set; }
-        public string AccountType { get; set; }
+        public string ?AccountType { get; set; }
         public double Balance { get; set; }
-        public string Currency { get; set; }
-        public string Name { get; set; }
+        public string ?Currency { get; set; }
+        public string ?Name { get; set; }
         public double InterestRate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

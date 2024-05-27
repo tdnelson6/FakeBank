@@ -66,7 +66,7 @@ namespace FakeBankAPI.Controllers.v1._0
 
             try
             {
-                if (AccountNumber == null)
+                if (AccountNumber == 0)
                 {
                     _logger.LogError("GetAccount failed for {AccountNumber}, no account number entered", AccountNumber); //logs the failed get account attempt
 
@@ -172,7 +172,7 @@ namespace FakeBankAPI.Controllers.v1._0
             _logger.LogWarning("UpdateAccount attempt for {AccountNumber}", AccountNumber); //logs the update account attempt
             try
             {
-                if (AccountNumber == null || AccountNumber != updateDTO.AccountNumber)
+                if (AccountNumber == 0 || AccountNumber != updateDTO.AccountNumber)
                 {
                     _logger.LogError("UpdateAccount failed for {AccountNumber}, no account number entered", AccountNumber); //logs the failed update account attempt
                     _response.IsSuccess = false; //sets the response to false
@@ -201,6 +201,7 @@ namespace FakeBankAPI.Controllers.v1._0
             return _response; //returns the response if it fails
         }
 
+        [HttpDelete("{AccountNumber:int}", Name = "DeleteAccount")]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -210,7 +211,7 @@ namespace FakeBankAPI.Controllers.v1._0
             _logger.LogWarning("DeleteAccount attempt for {AccountNumber}", AccountNumber); //logs the delete account attempt
             try
             {
-                if (AccountNumber == null || AccountNumber == 0)
+                if (AccountNumber == 0)
                 {
                     _logger.LogError("DeleteAccount failed for {AccountNumber}, no account number entered", AccountNumber); //logs the failed delete account attempt
 
