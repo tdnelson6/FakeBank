@@ -1,6 +1,7 @@
 ﻿using FakeBankAPI.BaseData;
 using FakeBankAPI.Models;
 using FakeBankAPI.Repo.RepoFunctionBase;
+using Serilog.Core;
 
 namespace FakeBankAPI.Repo
 {

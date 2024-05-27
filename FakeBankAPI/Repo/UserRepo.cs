@@ -87,6 +87,7 @@ namespace FakeBankAPI.Repo
             {
                 Token = tokenHandler.WriteToken(token), //writes the token to the response DTO
                 User = _mapper.Map<UserDTO>(user), //maps the user to the response DTO
+                Role = roles.FirstOrDefault().ToLower() //adds the roles to the response DTO
             };
             return loginResponseDTO; //returns the response DTO
 

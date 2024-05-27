@@ -4,6 +4,7 @@ using FakeBankAPI.BaseData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FakeBankAPI.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20240527081231_AddAccountTableFIX7")]
+    partial class AddAccountTableFIX7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,8 +33,9 @@ namespace FakeBankAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AccountNumber")
-                        .HasColumnType("int");
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AccountType")
                         .IsRequired()
@@ -65,26 +69,26 @@ namespace FakeBankAPI.Migrations
                         new
                         {
                             Id = 1,
-                            AccountNumber = 1234567890,
+                            AccountNumber = "1234567890",
                             AccountType = "Savings",
                             Balance = 1000.0,
-                            CreatedAt = new DateTime(2024, 5, 27, 10, 35, 50, 121, DateTimeKind.Local).AddTicks(565),
+                            CreatedAt = new DateTime(2024, 5, 27, 10, 12, 30, 586, DateTimeKind.Local).AddTicks(2887),
                             Currency = "USD",
                             InterestRate = 0.050000000000000003,
                             Name = "John Doe",
-                            UpdatedAt = new DateTime(2024, 5, 27, 10, 35, 50, 121, DateTimeKind.Local).AddTicks(617)
+                            UpdatedAt = new DateTime(2024, 5, 27, 10, 12, 30, 586, DateTimeKind.Local).AddTicks(2949)
                         },
                         new
                         {
                             Id = 2,
-                            AccountNumber = 987654321,
+                            AccountNumber = "0987654321",
                             AccountType = "Checking",
                             Balance = 500.0,
-                            CreatedAt = new DateTime(2024, 5, 27, 10, 35, 50, 121, DateTimeKind.Local).AddTicks(621),
+                            CreatedAt = new DateTime(2024, 5, 27, 10, 12, 30, 586, DateTimeKind.Local).AddTicks(2954),
                             Currency = "USD",
                             InterestRate = 0.01,
                             Name = "Jane Doe",
-                            UpdatedAt = new DateTime(2024, 5, 27, 10, 35, 50, 121, DateTimeKind.Local).AddTicks(623)
+                            UpdatedAt = new DateTime(2024, 5, 27, 10, 12, 30, 586, DateTimeKind.Local).AddTicks(2956)
                         });
                 });
 

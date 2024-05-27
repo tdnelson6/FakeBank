@@ -8,7 +8,7 @@ namespace FakeBankAPI.Models.DTOs
 
         [Required]
         [MinLength(10)] [MaxLength(10)]
-        public string AccountNumber { get; set; }
+        public int AccountNumber { get; set; }
         public string AccountType { get; set; }
         public double Balance { get; set; }
         public string UserId { get; set; }

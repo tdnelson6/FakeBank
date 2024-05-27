@@ -1,4 +1,5 @@
 ﻿using FakeBankAPI.BaseData;
+using FakeBankAPI.Models;
 using FakeBankAPI.Repo.RepoFunctionBase;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -9,6 +10,7 @@ namespace FakeBankAPI.Repo
     {
         private readonly DBContext _data;
         internal DbSet<T> dbSet;
+        private DBContext data;
         public Repo(DBContext data)
         {
             _data = data;
@@ -17,11 +19,11 @@ namespace FakeBankAPI.Repo
 
         public async Task CreateAsync(T entity)
         {
-            await dbSet.AddAsync(entity);
+            await _data.AddAsync(entity);
             await _data.SaveChangesAsync();
         }
 
-        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null, string? includedAccounts = null)
         {
             IQueryable<T> query = dbSet;
 
@@ -32,9 +34,9 @@ namespace FakeBankAPI.Repo
             }
 
             //checks if there are any properties to include and includes them
-            if (includeProperties != null)
+            if (includedAccounts != null)
             {
-                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeProperty in includedAccounts.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     query = query.Include(includeProperty);
                 }
@@ -44,7 +46,7 @@ namespace FakeBankAPI.Repo
             return await query.ToListAsync();
         }
 
-        public async Task<T> GetAsync(Expression<Func<T, bool>> filter = null, bool tracked = true, string? includeProperties = null)
+        public async Task<T> GetAsync(Expression<Func<T, bool>> filter = null, bool tracked = true, string? includedAccounts = null)
         {
             IQueryable<T> query = dbSet;
 
@@ -61,11 +63,11 @@ namespace FakeBankAPI.Repo
             }
 
             //checks if there are any properties to include and includes them
-            if (includeProperties != null)
+            if (includedAccounts != null)
             {
-                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var includeAccount in includedAccounts.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    query = query.Include(includeProperty);
+                    query.Include(includeAccount);
                 }
             }
 

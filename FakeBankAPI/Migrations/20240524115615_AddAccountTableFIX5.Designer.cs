@@ -4,6 +4,7 @@ using FakeBankAPI.BaseData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FakeBankAPI.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20240524115615_AddAccountTableFIX5")]
+    partial class AddAccountTableFIX5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,11 +71,11 @@ namespace FakeBankAPI.Migrations
                             AccountNumber = 1234567890,
                             AccountType = "Savings",
                             Balance = 1000.0,
-                            CreatedAt = new DateTime(2024, 5, 27, 10, 35, 50, 121, DateTimeKind.Local).AddTicks(565),
+                            CreatedAt = new DateTime(2024, 5, 24, 13, 56, 15, 374, DateTimeKind.Local).AddTicks(1994),
                             Currency = "USD",
                             InterestRate = 0.050000000000000003,
                             Name = "John Doe",
-                            UpdatedAt = new DateTime(2024, 5, 27, 10, 35, 50, 121, DateTimeKind.Local).AddTicks(617)
+                            UpdatedAt = new DateTime(2024, 5, 24, 13, 56, 15, 374, DateTimeKind.Local).AddTicks(2048)
                         },
                         new
                         {
@@ -80,11 +83,11 @@ namespace FakeBankAPI.Migrations
                             AccountNumber = 987654321,
                             AccountType = "Checking",
                             Balance = 500.0,
-                            CreatedAt = new DateTime(2024, 5, 27, 10, 35, 50, 121, DateTimeKind.Local).AddTicks(621),
+                            CreatedAt = new DateTime(2024, 5, 24, 13, 56, 15, 374, DateTimeKind.Local).AddTicks(2053),
                             Currency = "USD",
                             InterestRate = 0.01,
                             Name = "Jane Doe",
-                            UpdatedAt = new DateTime(2024, 5, 27, 10, 35, 50, 121, DateTimeKind.Local).AddTicks(623)
+                            UpdatedAt = new DateTime(2024, 5, 24, 13, 56, 15, 374, DateTimeKind.Local).AddTicks(2055)
                         });
                 });
 

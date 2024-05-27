@@ -18,7 +18,7 @@ namespace FakeBankAPI.BaseData
                 new Account
                 {
                     Id = 1,
-                    AccountNumber = "1234567890",
+                    AccountNumber = 1234567890,
                     AccountType = "Savings",
                     Balance = 1000.00,
                     Currency = "USD",
@@ -30,7 +30,7 @@ namespace FakeBankAPI.BaseData
                 new Account
                 {
                     Id = 2,
-                    AccountNumber = "0987654321",
+                    AccountNumber = 0987654321,
                     AccountType = "Checking",
                     Balance = 500.00,
                     Currency = "USD",

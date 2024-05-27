@@ -8,7 +8,7 @@ namespace FakeBankAPI.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public string AccountNumber { get; set; }
+        public int AccountNumber { get; set; }
         public string AccountType { get; set; }
         public double Balance { get; set; }
         public string Currency { get; set; }
